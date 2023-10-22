@@ -25,7 +25,7 @@ Problems:
     Solution: Implement a resource allocation manager to oversee resource availability and control client requests, ensuring fair and efficient resource allocation.
 
    ARCHITECTURE:
-     Centralized
-     One thread per user
-     Entry point is a LogIn page
+     Centralized;
+     One thread per user;
+     Entry point is a LogIn page;
      
