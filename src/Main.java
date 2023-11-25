@@ -1,9 +1,23 @@
 import java.util.Scanner;
 
 /*
+ *                                                  IMPORTANT
+ *
+ *  send message syntax: "send <username> <content>"
+ *      ex: send Sorin Hello my dear friend
+ *
+ *  add post to topic: "add to <topic_name> for <post_timeout>h <content>"
+ *                                          or
+ *                     "add to <topic_name> for <post_timeout>H <content>"
+ *              <post_timeout> - is a value (double or integer) which represents
+ *                                  after how many hours will be the post deleted (number+h/H)
+ *      ex: add to Moto for 3h I am very excited about my new motorcycle
+ *
+ */
+
+/*
     TO DO:
         - topic header?
-        - remove topic after X amount of time (read specs)
 
         -add events
             + maximum number of topics/messages in queues
@@ -14,23 +28,27 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        boolean bots_on = false;
-            boolean message_on = true;
-            boolean topic_on = false;
-        boolean my_terminal_on = true;
+        boolean bots_on = true;
+            boolean message_on = false;
+            boolean topic_on = true;
+        boolean my_terminal_on = false;
 
 	    Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
         Receiver_queue Radu_messages = new Receiver_queue("Radu");
 
         Topic moto = new Topic("Moto");
+        Topic university = new Topic("University");
+        Topic job = new Topic("Job");
 
         if(bots_on)
         {
             if(topic_on)
             {
-                Bot_Thread_Send bot1 = new Bot_Thread_Send("Jack","add Moto Hello",1000);
-                Bot_Thread_Send bot2 = new Bot_Thread_Send("John","add Moto Yello",1000);
-                Bot_Thread_Send bot3 = new Bot_Thread_Send("Jim","add Moto Hi",1000);
+                int time_between_topics_messages = 3000;
+
+                Bot_Thread_Send bot1 = new Bot_Thread_Send("Jack","add to Moto for 0.0013h Hello",time_between_topics_messages);
+                Bot_Thread_Send bot2 = new Bot_Thread_Send("John","add to Moto for 0.0007h Yello",time_between_topics_messages);
+                Bot_Thread_Send bot3 = new Bot_Thread_Send("Jim","add to Moto for 24H Hi",time_between_topics_messages);
 
                 bot1.start();
                 bot2.start();
@@ -39,9 +57,11 @@ public class Main {
 
             if(message_on)
             {
-                Bot_Thread_Send bot4 = new Bot_Thread_Send("Jack","send Sorin Hello",1000);
-                Bot_Thread_Send bot5 = new Bot_Thread_Send("John","send Sorin Yello",1000);
-                Bot_Thread_Send bot6 = new Bot_Thread_Send("Jim","send Sorin Hi",1000);
+                int time_between_messages = 1000;
+
+                Bot_Thread_Send bot4 = new Bot_Thread_Send("Jack","send Sorin Hello",time_between_messages);
+                Bot_Thread_Send bot5 = new Bot_Thread_Send("John","send Sorin Yello",time_between_messages);
+                Bot_Thread_Send bot6 = new Bot_Thread_Send("Jim","send Sorin Hi",time_between_messages);
 
                 bot4.start();
                 bot5.start();
