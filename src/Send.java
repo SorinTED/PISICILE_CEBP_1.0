@@ -2,7 +2,7 @@ public class Send {
     private String[] args;
     public Send(String[] args)
     {
-        this.args=args;
+        this.args = args;
     }
     public static boolean isNumeric(String strNum) {
         if (strNum == null) {
@@ -20,7 +20,26 @@ public class Send {
     {
         if(args.length >= 3)
         {
-            if(args[0].equals("send") && Receiver_queue.all_receivers.contains(args[1]))
+            if(args[0].equals("login"))
+            {
+                System.out.println("Logging in ... ");
+                User userToLogin = new User(args[1], args[2]);
+                Database loginDatabase = new Database();
+                User loggedInUser = Database.login(userToLogin);
+                try{
+                    loginDatabase.sem_login_database.acquire();
+                    if(loggedInUser != null)
+                        System.out.println("User " + loggedInUser + " Logged in successfully !");
+                    else
+                        System.out.println("Bad credentials for: " + userToLogin);
+                    loginDatabase.sem_login_database.release();
+                } catch (Exception exc)
+                {
+                    System.out.println(exc);
+                }
+
+            }
+            else if(args[0].equals("send") && Receiver_queue.all_receivers.contains(args[1]))
             {
                 System.out.println("Sending message ... ");
                 Receiver_queue user_queue = Receiver_queue.find_queue_for(args[1]);
