@@ -29,8 +29,8 @@ public class Main {
 
     public static void main(String[] args) {
         boolean bots_on = true;
-            boolean message_on = false;
-            boolean topic_on = true;
+            boolean message_on = true;
+            boolean topic_on = false;
         boolean my_terminal_on = false;
 
 	    Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
@@ -60,14 +60,17 @@ public class Main {
                 int time_between_messages = 1000;
 
                 Bot_Thread_Send bot4 = new Bot_Thread_Send("Jack","send Sorin Hello",time_between_messages);
-                Bot_Thread_Send bot5 = new Bot_Thread_Send("John","send Sorin Yello",time_between_messages);
+                Bot_Thread_Send bot5 = new Bot_Thread_Send("John","send Radu Yello",time_between_messages);
                 Bot_Thread_Send bot6 = new Bot_Thread_Send("Jim","send Sorin Hi",time_between_messages);
 
                 bot4.start();
                 bot5.start();
                 bot6.start();
+
             }
         }
+        Radu_messages.displayMessages("Radu");
+        Sorin_messages.displayMessages("Sorin");
 
         //for me in terminal
         if(my_terminal_on)
