@@ -22,4 +22,10 @@ public class Bot_Thread_Send extends Thread {
         this.commands=commands;
         this.wait_ms=wait_ms;
     }
+
+    public Bot_Thread_Send(String commands, int wait_ms)
+    {
+        this.commands=commands;
+        this.wait_ms=wait_ms;
+    }
 }

@@ -59,14 +59,20 @@ public class Main {
             boolean topic_on = true;
         boolean my_terminal_on = true;
 
+        Database loginDatabase = new Database();
+        User user1 = new User("Radu", "Radu69");
+        User user2 = new User("Sorin", "Sorin112");
+        User user3 = new User("Pasquale", "Pasquale123");
+        loginDatabase.addUser(user1);
+        loginDatabase.addUser(user2);
+        loginDatabase.addUser(user3);
+
 	    Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
         Receiver_queue Radu_messages = new Receiver_queue("Radu");
 
         Topic moto = new Topic("Moto");
         Topic university = new Topic("University");
         Topic job = new Topic("Job");
-
-        moto.setMax_posts(10);
 
         if(bots_on)
         {
@@ -94,6 +100,19 @@ public class Main {
                 bot4.start();
                 bot5.start();
                 bot6.start();
+            }
+
+            if(login_on)
+            {
+                int time_between_messages = 4000;
+
+                Bot_Thread_Send bot7 = new Bot_Thread_Send("login Radu Radu69",time_between_messages);
+                Bot_Thread_Send bot8 = new Bot_Thread_Send("login Sorin Sorin112",time_between_messages);
+                Bot_Thread_Send bot9 = new Bot_Thread_Send("login Pasquale Pasquale12",time_between_messages);
+
+                bot7.start();
+                bot8.start();
+                bot9.start();
             }
         }
 
