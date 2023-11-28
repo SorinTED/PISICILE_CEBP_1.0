@@ -22,17 +22,12 @@ public class Send {
         {
             if(args[0].equals("send") && Receiver_queue.all_receivers.contains(args[1]))
             {
-                System.out.println("Sending message ... ");
+                //System.out.println("Sending message ... ");
                 Receiver_queue user_queue = Receiver_queue.find_queue_for(args[1]);
-                try {
-                    user_queue.sem_receiver_queue.acquire();
+                if(user_queue.space_left_in_queue())
                     user_queue.write(user_queue, sender, args);
-                    System.out.println(user_queue.receiver_name + ": " + user_queue.message_queue);
-                    user_queue.sem_receiver_queue.release();
-                } catch (Exception exc)
-                {
-                    System.out.println(exc);
-                }
+                else
+                    System.out.println("Queue for messages to " + args[1] + " is full");
             }
             else if(args.length >= 6)
             {
@@ -42,17 +37,12 @@ public class Send {
                         && (args[4].charAt(args[4].length()-1) == 'h'
                         || args[4].charAt(args[4].length()-1) == 'H'))
                 {
-                    System.out.println("Adding to topic ... ");
+                    //System.out.println("Adding to topic ... ");
                     Topic topic = Topic.find_topic(args[2]);
-                    try {
-                        topic.sem_topic_queue.acquire();
+                    if (topic.space_left_in_queue())
                         topic.write(sender, args);
-                        System.out.println(topic.topic_name + ": " + topic.topic_queue);
-                        topic.sem_topic_queue.release();
-                    } catch (Exception exc)
-                    {
-                        System.out.println(exc);
-                    }
+                    else
+                        System.out.println("Queue for topic " + topic.topic_name + " is full");
                 }
                 else
                 {

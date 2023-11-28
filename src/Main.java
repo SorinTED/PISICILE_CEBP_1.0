@@ -17,10 +17,17 @@ import java.util.Scanner;
 
 /*
     TO DO:
-        - topic header?
+        - topic header? Is it ok?
 
-        -add events
-            + maximum number of topics/messages in queues
+        - add events
+            + ?
+
+        - administration
+            -> setting the server timeout and other variables by command line or is it ok by Main()?
+          + admin delete message?
+          + admin empty queue?
+          + admin set max_posts/max_messages
+          + ...
  */
 
 //read from Radu
@@ -29,8 +36,8 @@ public class Main {
 
     public static void main(String[] args) {
         boolean bots_on = true;
-            boolean message_on = false;
-            boolean topic_on = true;
+            boolean message_on = true;
+            boolean topic_on = false;
         boolean my_terminal_on = false;
 
 	    Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
