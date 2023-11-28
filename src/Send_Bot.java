@@ -9,6 +9,6 @@ public class Send_Bot {
     }
     private void behave(String[] args)
     {
-        Send.send_to(name, args);
+        Do.execute(name, args);
     }
 }

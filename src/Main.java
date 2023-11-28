@@ -13,32 +13,51 @@ import java.util.Scanner;
  *                                  after how many hours will be the post deleted (number+h/H)
  *      ex: add to Moto for 3h I am very excited about my new motorcycle
  *
+ *
+ *                                                  >ADMIN<
+ *
+ *  admin set server timeout <timeout>h
+ *              <post_timeout> - is a value (double or integer) which represents
+ *                                  after how many hours will be the post deleted (number+h/H)
+ *       ex: set server timeout 4h
+ *
+ *  admin set <topic> max <number_max_posts> posts
+ *       ex: set Moto max 30 posts
+ *
+ *  admin set <topic> max <number_max_posts> messages
+ *       ex: set Moto max 30 posts
+ *
+ *  admin empty topic <topic>
+ *      ex: admin empty moto
+ *
+ *  admin empty user <user> messages
+ *      ex: admin delete Sorin messages
+ *
+ *  admin delete user <user>
+ *      ex: admin delete Sorin
+ *
+ *  admin delete topic <topic>
+ *      ex: admin delete Moto
+ *
+ *  admin create topic <topic>
+ *      ex: admin create topic Moto
+ *
+ *  admin create user <user>
+ *      ex: admin add user Sorin
+ *
+ *  admin see all topics
+ *
+ *  admin see all users
+ *
  */
-
-/*
-    TO DO:
-        - topic header? Is it ok?
-
-        - add events
-            + ?
-
-        - administration
-            -> setting the server timeout and other variables by command line or is it ok by Main()?
-          + admin delete message?
-          + admin empty queue?
-          + admin set max_posts/max_messages
-          + ...
- */
-
-//read from Radu
 
 public class Main {
 
     public static void main(String[] args) {
-        boolean bots_on = true;
+        boolean bots_on = false;
             boolean message_on = true;
-            boolean topic_on = false;
-        boolean my_terminal_on = false;
+            boolean topic_on = true;
+        boolean my_terminal_on = true;
 
 	    Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
         Receiver_queue Radu_messages = new Receiver_queue("Radu");
@@ -46,6 +65,8 @@ public class Main {
         Topic moto = new Topic("Moto");
         Topic university = new Topic("University");
         Topic job = new Topic("Job");
+
+        moto.setMax_posts(10);
 
         if(bots_on)
         {
@@ -86,9 +107,9 @@ public class Main {
             do {
                 System.out.print("Enter text (press Enter to exit): ");
                 input = scanner.nextLine();
-                System.out.println("You entered: " + input);
+                //System.out.println("You entered: " + input);
                 input_args = input.split(" ");
-                Send.send_to("Vivaldo Pasquale Constantin Tiberius Marius al 3-lea", input_args);
+                Do.execute("Vivaldo Pasquale", input_args);
             } while (!input.isEmpty());
 
             scanner.close();

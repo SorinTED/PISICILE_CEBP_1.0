@@ -2,6 +2,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Topic {
     public String topic_name;
@@ -15,25 +17,42 @@ public class Topic {
     // for this topic a list of messages like [[author, content, timestamp], ... ]
     public LinkedList topic_queue = new LinkedList();
 
-    public Semaphore sem_topic_queue = new Semaphore(1);
-    public static Semaphore sem_linked_lists = new Semaphore(1);
+    //write semaphores
+    public Semaphore sem_topic_queue_wr = new Semaphore(1);
+    public static Semaphore sem_linked_lists_wr = new Semaphore(1);
+
+    //read semaphores
+    public Semaphore sem_topic_queue_rd = new Semaphore(5);
+    public static Semaphore sem_linked_lists_rd = new Semaphore(5);
+
+    //locks
+    public Lock lock_max_posts = new ReentrantLock();
+    public static Lock lock_server_timeout = new ReentrantLock();
 
     public static Event_Bot_Thread event_bot = new Event_Bot_Thread("Topic",1000);
 
-    public void setMax_posts(int max_posts) { this.max_posts = max_posts; }
+    public void setMax_posts(int max_posts)
+    {
+        this.lock_max_posts.lock();
+        this.max_posts = max_posts;
+        this.lock_max_posts.unlock();
+    }
+
     public static void setServer_timeout(double timeout)
     {
+        lock_server_timeout.lock();
         server_timeout = timeout;
+        lock_server_timeout.unlock();
     }
 
     public Topic(String topic_name)
     {
         try {
-            sem_linked_lists.acquire();
+            sem_linked_lists_wr.acquire();
             this.topic_name = topic_name;
             all_topics_name.add(topic_name);
             all_topics.add(this);
-            sem_linked_lists.release();
+            sem_linked_lists_wr.release();
         }catch (Exception exc)
         {
             System.out.println(exc);
@@ -42,17 +61,17 @@ public class Topic {
     public static Topic find_topic(String topic_name)
     {
         try {
-            sem_linked_lists.acquire();
+            sem_linked_lists_rd.acquire();
             if(all_topics_name.contains(topic_name))
             {
                 int index = all_topics_name.indexOf(topic_name);
-                sem_linked_lists.release();
+                sem_linked_lists_rd.release();
                 return (Topic) all_topics.get(index);
             }
             else
             {
                 System.out.println("Topic not found!");
-                sem_linked_lists.release();
+                sem_linked_lists_rd.release();
                 return null;
             }
         }catch (Exception exc)
@@ -71,7 +90,7 @@ public class Topic {
     public void write(String author ,String[] args)
     {
         try {
-            this.sem_topic_queue.acquire();
+            this.sem_topic_queue_wr.acquire();
 
             LinkedList content = new LinkedList();
             content.add(author);
@@ -88,7 +107,7 @@ public class Topic {
 
             System.out.println(this.topic_name + ": " + this.topic_queue);
 
-            this.sem_topic_queue.release();
+            this.sem_topic_queue_wr.release();
 
         }catch (Exception exc)
         {
@@ -111,11 +130,11 @@ public class Topic {
     public static void delete_posts_after()
     {
         try {
-            sem_linked_lists.acquire();
+            sem_linked_lists_rd.acquire();
             for(Object element : Topic.all_topics)
             {
                 Topic topic = (Topic)(element);
-                topic.sem_topic_queue.acquire();
+                topic.sem_topic_queue_wr.acquire();
 
                 Iterator i = topic.topic_queue.iterator();
 
@@ -131,9 +150,9 @@ public class Topic {
                     }
                 }
 
-                topic.sem_topic_queue.release();
+                topic.sem_topic_queue_wr.release();
             }
-            sem_linked_lists.release();
+            sem_linked_lists_rd.release();
         }catch (Exception exc){
             System.out.println(exc);
         }
@@ -142,19 +161,63 @@ public class Topic {
     public static void verify_number_of_posts()
     {
         try {
-            sem_linked_lists.acquire();
+            sem_linked_lists_rd.acquire();
             for(Object element : Topic.all_topics)
             {
                 Topic topic = (Topic)(element);
-                topic.sem_topic_queue.acquire();
+                topic.sem_topic_queue_rd.acquire();
 
                 if(!topic.space_left_in_queue())
                     System.out.println("The queue for topic " + topic.topic_name + " is full");
 
-                topic.sem_topic_queue.release();
+                topic.sem_topic_queue_rd.release();
             }
-            sem_linked_lists.release();
+            sem_linked_lists_rd.release();
         }catch (Exception exc){
+            System.out.println(exc);
+        }
+    }
+    public void empty_topic()
+    {
+        try {
+            this.sem_topic_queue_wr.acquire();
+
+            this.topic_queue.clear();
+
+            this.sem_topic_queue_wr.release();
+        } catch (Exception exc)
+        {
+            System.out.println(exc);
+        }
+    }
+    public static String list_of_topics()
+    {
+        try {
+            sem_linked_lists_rd.acquire();
+
+            String to_return = all_topics_name.toString();
+
+            sem_linked_lists_rd.release();
+
+            return to_return;
+        }catch (Exception exc)
+        {
+            System.out.println(exc);
+        }
+        return null;
+    }
+    public void delete_topic()
+    {
+        try {
+            sem_linked_lists_wr.acquire();
+
+            all_topics_name.remove(topic_name);
+            all_topics.remove(this);
+            empty_topic();
+
+            sem_linked_lists_wr.release();
+        }catch (Exception exc)
+        {
             System.out.println(exc);
         }
     }
