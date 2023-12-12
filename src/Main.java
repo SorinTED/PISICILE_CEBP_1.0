@@ -2,6 +2,8 @@ import java.util.Scanner;
 
 /*
  *                                                  IMPORTANT
+ * login <Username> <password>
+ *      ex: login Radu Radu69
  *
  *  send message syntax: "send <username> <content>"
  *      ex: send Sorin Hello my dear friend
@@ -43,7 +45,7 @@ import java.util.Scanner;
  *      ex: admin create topic Moto
  *
  *  admin create user <user>
- *      ex: admin add user Sorin
+ *      ex: admin create user Sorin
  *
  *  admin see all topics
  *
@@ -54,25 +56,32 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        boolean bots_on = false;
-            boolean message_on = true;
-            boolean topic_on = true;
-        boolean my_terminal_on = true;
+        boolean bots_on = true;
+            boolean login_on = true;
+            boolean message_on = false;
+            boolean topic_on = false;
+        boolean my_terminal_on = false;
+
+        boolean defaults = true;
 
         Database loginDatabase = new Database();
-        User user1 = new User("Radu", "Radu69");
-        User user2 = new User("Sorin", "Sorin112");
-        User user3 = new User("Pasquale", "Pasquale123");
-        loginDatabase.addUser(user1);
-        loginDatabase.addUser(user2);
-        loginDatabase.addUser(user3);
 
-	    Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
-        Receiver_queue Radu_messages = new Receiver_queue("Radu");
+        if(defaults)
+        {
+            User user1 = new User("Radu", "Radu69");
+            User user2 = new User("Sorin", "Sorin112");
+            User user3 = new User("Pasquale", "Pasquale123");
+            loginDatabase.addUser(user1);
+            loginDatabase.addUser(user2);
+            loginDatabase.addUser(user3);
 
-        Topic moto = new Topic("Moto");
-        Topic university = new Topic("University");
-        Topic job = new Topic("Job");
+            Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
+            Receiver_queue Radu_messages = new Receiver_queue("Radu");
+
+            Topic moto = new Topic("Moto");
+            Topic university = new Topic("University");
+            Topic job = new Topic("Job");
+        }
 
         if(bots_on)
         {
@@ -133,7 +142,6 @@ public class Main {
 
             scanner.close();
         }
-
 
     }
 }

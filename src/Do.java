@@ -18,8 +18,25 @@ public class Do {
 
     public static void execute(String sender, String[] args)
     {
+        //login
+        if(args.length == 3 && args[0].equals("login")) {
+            System.out.println("Logging in ... ");
+            User userToLogin = new User(args[1], args[2]);
+            Database loginDatabase = new Database();
+            User loggedInUser = Database.login(userToLogin);
+            try {
+                loginDatabase.sem_login_database.acquire();
+                if (loggedInUser != null)
+                    System.out.println("User " + loggedInUser + " Logged in successfully !");
+                else
+                    System.out.println("Bad credentials for: " + userToLogin);
+                loginDatabase.sem_login_database.release();
+            } catch (Exception exc) {
+                System.out.println(exc);
+            }
+        }
         //send to user message
-        if(args.length >= 3 && args[0].equals("send") && Receiver_queue.all_receivers.contains(args[1]))
+        else if(args.length >= 3 && args[0].equals("send") && Receiver_queue.all_receivers.contains(args[1]))
         {
             Receiver_queue user_queue = Receiver_queue.find_queue_for(args[1]);
             if(user_queue.space_left_in_queue())
