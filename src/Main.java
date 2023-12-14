@@ -1,3 +1,4 @@
+import javax.xml.crypto.Data;
 import java.util.Scanner;
 
 /*
@@ -56,24 +57,22 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        boolean bots_on = true;
+        boolean bots_on = false;
             boolean login_on = true;
             boolean message_on = false;
             boolean topic_on = false;
-        boolean my_terminal_on = false;
+        boolean my_terminal_on = true;
 
         boolean defaults = true;
-
-        Database loginDatabase = new Database();
 
         if(defaults)
         {
             User user1 = new User("Radu", "Radu69");
             User user2 = new User("Sorin", "Sorin112");
             User user3 = new User("Pasquale", "Pasquale123");
-            loginDatabase.addUser(user1);
-            loginDatabase.addUser(user2);
-            loginDatabase.addUser(user3);
+            Database.addUser(user1);
+            Database.addUser(user2);
+            Database.addUser(user3);
 
             Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
             Receiver_queue Radu_messages = new Receiver_queue("Radu");
@@ -131,17 +130,30 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
             String input;
             String[] input_args;
+            User user = null;
 
             do {
-                System.out.print("Enter text (press Enter to exit): ");
-                input = scanner.nextLine();
-                //System.out.println("You entered: " + input);
-                input_args = input.split(" ");
-                Do.execute("Vivaldo Pasquale", input_args);
+                if(Database.isAuthenticated(user))
+                {
+                    System.out.print("Enter text (press Enter to exit): ");
+                    input = scanner.nextLine();
+                    //System.out.println("You entered: " + input);
+                    input_args = input.split(" ");
+                    Do.execute(user.toString(), input_args);
+                }
+                else{
+                    do {
+                        System.out.print("Please login:");
+                        input = scanner.nextLine();;
+                        input_args = input.split(" ");
+                        user = Do.execute_login(input, input_args);
+                        if( user == null )
+                            System.out.println("Bad credentials! Try again");
+                    } while (user == null);
+                }
             } while (!input.isEmpty());
 
             scanner.close();
         }
-
     }
 }

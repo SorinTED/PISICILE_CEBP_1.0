@@ -1,3 +1,5 @@
+import javax.xml.crypto.Data;
+
 public class Do {
     private String[] args;
     public Do(String[] args)
@@ -16,25 +18,38 @@ public class Do {
         return true;
     }
 
-    public static void execute(String sender, String[] args)
-    {
+    public static User execute_login(String sender, String[] args){
         //login
         if(args.length == 3 && args[0].equals("login")) {
             System.out.println("Logging in ... ");
-            User userToLogin = new User(args[1], args[2]);
-            Database loginDatabase = new Database();
-            User loggedInUser = Database.login(userToLogin);
-            try {
-                loginDatabase.sem_login_database.acquire();
-                if (loggedInUser != null)
-                    System.out.println("User " + loggedInUser + " Logged in successfully !");
-                else
-                    System.out.println("Bad credentials for: " + userToLogin);
-                loginDatabase.sem_login_database.release();
-            } catch (Exception exc) {
-                System.out.println(exc);
+            String username = args[1];
+            String password = args[2];
+            User userToLogin = new User(username, password);
+            if(Database.findUser(userToLogin) != null) {
+                if(Database.login(userToLogin)) {
+                    System.out.println("User " + userToLogin + " Logged in successfully !");
+                    return userToLogin;
+                }
+                else{
+                    System.out.println("Bad credentials for: '" + username + "'");
+                }
             }
+
         }
+        return null;
+    }
+
+    public static void execute(String sender, String[] args)
+    {
+        //logout
+        if(args.length == 1 && args[0].equals("logout"))
+        {
+            String username = sender.substring(1, sender.length() - 1);
+            User user = Database.findUserByUsername(username);
+            Database.logout(user);
+            System.out.println("User " + user + " Logged Out");
+        }
+
         //send to user message
         else if(args.length >= 3 && args[0].equals("send") && Receiver_queue.all_receivers.contains(args[1]))
         {
@@ -106,6 +121,7 @@ public class Do {
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("see") && args[2].equals("all")
                 && args[3].equals("users"))
         {
+            Database.seeUsers();
             System.out.println(Receiver_queue.list_of_users());
         }
         //admin see all topics
@@ -115,10 +131,15 @@ public class Do {
             System.out.println(Topic.list_of_topics());
         }
         //admin create user
-        else if(args.length == 4 && args[0].equals("admin") && args[1].equals("create") && args[2].equals("user"))
+        else if(args.length == 5 && args[0].equals("admin") && args[1].equals("create") && args[2].equals("user")
+                && args[3].length()!=0 && args[4].length()!=0)
         {
-            System.out.println("User " + args[3] + " created");
-            Receiver_queue user = new Receiver_queue(args[3]);
+            String username = args[3];
+            String password = args[4];
+            User userAdded = new User(username, password);
+            Database.addUser(userAdded);
+            Receiver_queue user = new Receiver_queue(username);
+            System.out.println("User '" + username + "' created");
         }
         //admin create topic
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("create") && args[2].equals("topic"))
@@ -139,10 +160,13 @@ public class Do {
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("delete") && args[2].equals("user")
                 && Receiver_queue.all_receivers.contains(args[3]))
         {
-            System.out.println("User " + args[3] + " deleted");
-            Receiver_queue queue = Receiver_queue.find_queue_for(args[3]);
+            String username = args[3];
+            Database.deleteUser(username);
+            Database.seeUsers();
+            Receiver_queue queue = Receiver_queue.find_queue_for(username);
             queue.delete_user();
-            queue=null;
+            queue = null;
+            System.out.println("User " + username + " deleted");
         }
         else
         {
