@@ -51,7 +51,7 @@ public class Do {
         }
 
         //send to user message
-        else if(args.length >= 3 && args[0].equals("send") && Receiver_queue.all_receivers.contains(args[1]))
+        else if(args.length >= 3 && args[0].equals("send") && Receiver_queue.find_queue_for(args[1]) != null)
         {
             Receiver_queue user_queue = Receiver_queue.find_queue_for(args[1]);
             if(user_queue.space_left_in_queue())
@@ -61,7 +61,7 @@ public class Do {
         }
         //post to topic message
         else if(args.length >= 6 && args[0].equals("add") && args[1].equals("to")
-                && Topic.all_topics_name.contains(args[2]) && args[3].equals("for")
+                && Topic.find_topic(args[2]) != null && args[3].equals("for")
                 && (isNumeric(args[4].substring(0, args[4].length() - 1)))
                 && (args[4].charAt(args[4].length()-1) == 'h'
                 || args[4].charAt(args[4].length()-1) == 'H'))
@@ -85,7 +85,7 @@ public class Do {
         }
         //admin set max posts to topic
         else if(args.length == 6 && args[0].equals("admin") && args[1].equals("set")
-                && Topic.all_topics_name.contains(args[2]) && args[3].equals("max")
+                && Topic.find_topic(args[2]) != null && args[3].equals("max")
                 && (isNumeric(args[4])) && args[5].equals("posts"))
         {
             Topic topic = Topic.find_topic(args[2]);
@@ -94,7 +94,7 @@ public class Do {
         }
         //admin set max messages for user queue
         else if(args.length == 6 && args[0].equals("admin") && args[1].equals("set")
-                && Receiver_queue.all_receivers.contains(args[2]) && args[3].equals("max")
+                && Receiver_queue.find_queue_for(args[2]) != null && args[3].equals("max")
                 && (isNumeric(args[4])) && args[5].equals("messages"))
         {
             Receiver_queue queue = Receiver_queue.find_queue_for(args[2]);
@@ -103,7 +103,7 @@ public class Do {
         }
         //admin empty topic
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("empty")
-                && args[2].equals("topic") && Topic.all_topics_name.contains(args[3]))
+                && args[2].equals("topic") && Topic.find_topic(args[3]) != null)
         {
             System.out.println("Emptying topic " + args[3]);
             Topic topic = Topic.find_topic(args[3]);
@@ -111,7 +111,7 @@ public class Do {
         }
         //admin empty user messages
         else if(args.length == 5 && args[0].equals("admin") && args[1].equals("empty") && args[2].equals("user")
-                && Receiver_queue.all_receivers.contains(args[3]) && args[4].equals("messages"))
+                && Receiver_queue.find_queue_for(args[3]) != null && args[4].equals("messages"))
         {
             System.out.println("Emptying user " + args[3] + " messages");
             Receiver_queue queue = Receiver_queue.find_queue_for(args[3]);
@@ -149,7 +149,7 @@ public class Do {
         }
         //admin delete topic
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("delete") && args[2].equals("topic")
-                && Topic.all_topics_name.contains(args[3]))
+                && Topic.find_topic(args[3]) != null)
         {
             System.out.println("Topic " + args[3] + " deleted");
             Topic topic = Topic.find_topic(args[3]);
@@ -163,8 +163,10 @@ public class Do {
             Database.deleteUser(username);
             Database.seeUsers();
             Receiver_queue queue = Receiver_queue.find_queue_for(username);
-            queue.delete_user();
-            queue = null;
+            if (queue != null)
+            {
+                queue.delete_user();
+            }
             System.out.println("User " + username + " deleted");
         }
         else
