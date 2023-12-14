@@ -16,6 +16,8 @@ import java.util.Scanner;
  *                                  after how many hours will be the post deleted (number+h/H)
  *      ex: add to Moto for 3h I am very excited about my new motorcycle
  *
+ * logout
+ *
  *
  *                                                  >ADMIN<
  *
@@ -45,8 +47,8 @@ import java.util.Scanner;
  *  admin create topic <topic>
  *      ex: admin create topic Moto
  *
- *  admin create user <user>
- *      ex: admin create user Sorin
+ *  admin create user <user> <password>
+ *      ex: admin create user Sorin 1234
  *
  *  admin see all topics
  *

@@ -157,8 +157,7 @@ public class Do {
             topic=null;
         }
         //admin delete user
-        else if(args.length == 4 && args[0].equals("admin") && args[1].equals("delete") && args[2].equals("user")
-                && Receiver_queue.all_receivers.contains(args[3]))
+        else if(args.length == 4 && args[0].equals("admin") && args[1].equals("delete") && args[2].equals("user"))
         {
             String username = args[3];
             Database.deleteUser(username);
