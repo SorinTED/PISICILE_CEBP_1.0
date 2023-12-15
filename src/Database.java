@@ -9,6 +9,9 @@ public class Database{
     public static Semaphore sem_authUsers_wr = new Semaphore(1);
     public static Semaphore sem_authUsers_rd = new Semaphore(5);
 
+    public static Event_Bot_Thread event_bot = new Event_Bot_Thread("Database",2000);
+
+
     static {
         initializeDatabase();
     }
@@ -76,6 +79,11 @@ public class Database{
         }
     }
 
+    public static boolean isAdmin(User user)
+    {
+        return user.getRole().equals("ADMIN");
+    }
+
     public static User findUser(User user)
     {
         try{
@@ -107,7 +115,7 @@ public class Database{
                     return database.get(index);
                 }
             }
-            System.out.println("User '" + username + "' not found in DB");
+            System.out.println("Username '" + username + "' not found in DB");
             sem_database_rd.release();
         }catch (Exception e) {
             System.out.println(e);
@@ -115,16 +123,27 @@ public class Database{
         return null;
     }
 
+    public static User findUserBySender(String sender)
+    {
+        String username = sender.substring(1, sender.length() - 1);
+        return findUserByUsername(username);
+    }
+
     public static void addUser(User user)
     {
         try {
-            if(findUserByUsername(user.getUsername()) != null) {
+            if(findUser(user) != null) {
                 System.out.println("User already signed up!");
+                return;
+            }
+            else if(findUserByUsername(user.getUsername()) != null) {
+                System.out.println("Username already taken!");
                 return;
             }
 
             sem_database_wr.acquire();
             database.add(user);
+            System.out.println("User " + user + " added!");
             sem_database_wr.release();
         } catch (Exception e) {
             System.out.println(e);

@@ -1,5 +1,3 @@
-import javax.xml.crypto.Data;
-
 public class Do {
     private String[] args;
     public Do(String[] args)
@@ -44,8 +42,7 @@ public class Do {
         //logout
         if(args.length == 1 && args[0].equals("logout"))
         {
-            String username = sender.substring(1, sender.length() - 1);
-            User user = Database.findUserByUsername(username);
+            User user = Database.findUserBySender(sender);
             Database.logout(user);
             System.out.println("User " + user + " Logged Out");
         }
@@ -80,94 +77,171 @@ public class Do {
                 && (args[4].charAt(args[4].length()-1) == 'h'
                 || args[4].charAt(args[4].length()-1) == 'H'))
         {
-            System.out.println("Setting server timeout to " + Double.valueOf(args[4].substring(0, args[4].length() - 1)));
-            Topic.setServer_timeout(Double.valueOf(args[4].substring(0, args[4].length() - 1)));
+            User senderUser = Database.findUserBySender(sender);
+            if (Database.isAdmin(senderUser))
+            {
+                System.out.println("Setting server timeout to " + Double.valueOf(args[4].substring(0, args[4].length() - 1)));
+                Topic.setServer_timeout(Double.valueOf(args[4].substring(0, args[4].length() - 1)));
+            } else {
+                System.out.println("You don't have this permission!");
+            }
         }
         //admin set max posts to topic
         else if(args.length == 6 && args[0].equals("admin") && args[1].equals("set")
                 && Topic.find_topic(args[2]) != null && args[3].equals("max")
                 && (isNumeric(args[4])) && args[5].equals("posts"))
         {
-            Topic topic = Topic.find_topic(args[2]);
-            System.out.println("Setting max posts to topic " + topic.topic_name + " to " + Integer.valueOf(args[4]));
-            topic.setMax_posts(Integer.valueOf(args[4]));
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
+            {
+                Topic topic = Topic.find_topic(args[2]);
+                System.out.println("Setting max posts to topic " + topic.topic_name + " to " + Integer.valueOf(args[4]));
+                topic.setMax_posts(Integer.valueOf(args[4]));
+            }
+            else {
+                System.out.println("You don't have this permission!");
+            }
+
         }
         //admin set max messages for user queue
         else if(args.length == 6 && args[0].equals("admin") && args[1].equals("set")
                 && Receiver_queue.find_queue_for(args[2]) != null && args[3].equals("max")
                 && (isNumeric(args[4])) && args[5].equals("messages"))
         {
-            Receiver_queue queue = Receiver_queue.find_queue_for(args[2]);
-            System.out.println("Setting max messages to " + queue.receiver_name + " to " + Integer.valueOf(args[4]));
-            queue.setMax_messages(Integer.valueOf(args[4]));
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
+            {
+                Receiver_queue queue = Receiver_queue.find_queue_for(args[2]);
+                System.out.println("Setting max messages to " + queue.receiver_name + " to " + Integer.valueOf(args[4]));
+                queue.setMax_messages(Integer.valueOf(args[4]));
+            }
+            else {
+                System.out.println("You don't have this permission!");
+            }
         }
         //admin empty topic
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("empty")
                 && args[2].equals("topic") && Topic.find_topic(args[3]) != null)
         {
-            System.out.println("Emptying topic " + args[3]);
-            Topic topic = Topic.find_topic(args[3]);
-            topic.empty_topic();
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
+            {
+                System.out.println("Emptying topic " + args[3]);
+                Topic topic = Topic.find_topic(args[3]);
+                topic.empty_topic();
+            }
+            else {
+                System.out.println("You don't have this permission!");
+            }
         }
         //admin empty user messages
         else if(args.length == 5 && args[0].equals("admin") && args[1].equals("empty") && args[2].equals("user")
                 && Receiver_queue.find_queue_for(args[3]) != null && args[4].equals("messages"))
         {
-            System.out.println("Emptying user " + args[3] + " messages");
-            Receiver_queue queue = Receiver_queue.find_queue_for(args[3]);
-            queue.empty_queue();
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
+            {
+                System.out.println("Emptying user " + args[3] + " messages");
+                Receiver_queue queue = Receiver_queue.find_queue_for(args[3]);
+                queue.empty_queue();
+            }
+            else {
+                System.out.println("You don't have this permission!");
+            }
         }
         //admin see all users
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("see") && args[2].equals("all")
                 && args[3].equals("users"))
         {
-            Database.seeUsers();
-            System.out.println(Receiver_queue.list_of_users());
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
+            {
+                Database.seeUsers();
+                System.out.println(Receiver_queue.list_of_users());
+            }
+            else {
+                System.out.println("You don't have this permission!");
+            }
         }
         //admin see all topics
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("see") && args[2].equals("all")
                 && args[3].equals("topics"))
         {
-            System.out.println(Topic.list_of_topics());
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
+            {
+                System.out.println(Topic.list_of_topics());
+            }
+            else {
+                System.out.println("You don't have this permission!");
+            }
         }
         //admin create user
         else if(args.length == 5 && args[0].equals("admin") && args[1].equals("create") && args[2].equals("user")
                 && args[3].length()!=0 && args[4].length()!=0)
         {
-            String username = args[3];
-            String password = args[4];
-            User userAdded = new User(username, password);
-            Database.addUser(userAdded);
-            Receiver_queue user = new Receiver_queue(username);
-            System.out.println("User '" + username + "' created");
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
+            {
+                String username = args[3];
+                String password = args[4];
+                User userAdded = new User(username, password);
+                Database.addUser(userAdded);
+                Receiver_queue user = new Receiver_queue(username);
+                System.out.println("User '" + username + "' created");
+            }
+            else {
+                System.out.println("You don't have this permission!");
+            }
         }
         //admin create topic
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("create") && args[2].equals("topic"))
         {
-            System.out.println("Topic " + args[3] + " created");
-            Topic topic = new Topic(args[3]);
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
+            {
+                System.out.println("Topic " + args[3] + " created");
+                Topic topic = new Topic(args[3]);
+            }
+            else {
+                System.out.println("You don't have this permission!");
+            }
         }
         //admin delete topic
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("delete") && args[2].equals("topic")
                 && Topic.find_topic(args[3]) != null)
         {
-            System.out.println("Topic " + args[3] + " deleted");
-            Topic topic = Topic.find_topic(args[3]);
-            topic.delete_topic();
-            topic=null;
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
+            {
+                System.out.println("Topic " + args[3] + " deleted");
+                Topic topic = Topic.find_topic(args[3]);
+                topic.delete_topic();
+                topic=null;
+            }
+            else {
+                System.out.println("You don't have this permission!");
+            }
         }
         //admin delete user
         else if(args.length == 4 && args[0].equals("admin") && args[1].equals("delete") && args[2].equals("user"))
         {
-            String username = args[3];
-            Database.deleteUser(username);
-            Database.seeUsers();
-            Receiver_queue queue = Receiver_queue.find_queue_for(username);
-            if (queue != null)
+            User senderUser = Database.findUserBySender(sender);
+            if(Database.isAdmin(senderUser))
             {
-                queue.delete_user();
+                String username = args[3];
+                Database.deleteUser(username);
+                Database.seeUsers();
+                Receiver_queue queue = Receiver_queue.find_queue_for(username);
+                if (queue != null)
+                {
+                    queue.delete_user();
+                }
+                System.out.println("User " + username + " deleted");
             }
-            System.out.println("User " + username + " deleted");
+            else {
+                System.out.println("You don't have this permission!");
+            }
         }
         else
         {
