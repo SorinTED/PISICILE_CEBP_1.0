@@ -63,9 +63,16 @@ public class Main {
             boolean login_on = true;
             boolean message_on = false;
             boolean topic_on = false;
-        boolean my_terminal_on = true;
+        boolean my_terminal_on = false;
 
-        boolean defaults = true;
+        boolean defaults = false;
+        boolean database = true;
+
+        if(database)
+        {
+            User user1 = new User("Radu", "Radu69");
+            Database.addUser(user1);
+        }
 
         if(defaults)
         {
@@ -143,7 +150,8 @@ public class Main {
                     input_args = input.split(" ");
                     Do.execute(user.toString(), input_args);
                 }
-                else{
+                else
+                {
                     do {
                         System.out.print("Please login:");
                         input = scanner.nextLine();;
