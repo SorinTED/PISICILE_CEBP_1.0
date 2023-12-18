@@ -283,44 +283,6 @@ public class Main {
         }
     }
 
-    private static void send_demo_database(boolean start, boolean my_terminal_on, boolean database) {
-        boolean send_demo = true;
-
-        if(!start)
-            return;
-
-        database(database);
-
-        if(send_demo)
-        {
-//            Do.permission = false;
-//
-//            int time_between_messages = 4000;
-//
-//            Bot_Thread_Send bot1 = new Bot_Thread_Send("admin create user Ionel Ionel",time_between_messages);
-//            Bot_Thread_Send bot2 = new Bot_Thread_Send("admin create user Cipi Cipi",time_between_messages);
-//            Bot_Thread_Send bot3 = new Bot_Thread_Send("admin create user Pasquale Pasquale",time_between_messages);
-//
-//            bot1.start();
-//            bot2.start();
-//            bot3.start();
-        }
-
-        start_terminal(my_terminal_on);
-
-        /*
-            login Radu Radu | already logged in
-            login Cristi Cristi | Bad Credentials
-            login Vlad Vlad
-            admin see all users | No permission
-            logout
-            login admin admin
-            admin see all users
-            admin delete user Catalin
-         */
-
-    }
-
     private static void database(boolean database)
     {
         if(database)

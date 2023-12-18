@@ -119,7 +119,7 @@ public class Receiver_queue {
             user_queue.message_queue.add(content);
 
             //here we have also a NullPointerException in case of concurrent modifications
-            if(verbose && concurrency_enabled_for_write)
+            if(verbose)
                 System.out.println(user_queue.receiver_name + ": " + user_queue.message_queue);
             System.out.println("Message sent successfully");
 
@@ -127,7 +127,7 @@ public class Receiver_queue {
                 user_queue.sem_message_queue_wr.release();
         }catch (Exception exc)
         {
-            System.out.println(exc + " in write");
+            System.out.println(exc);
         }
     }
     //Event 1
