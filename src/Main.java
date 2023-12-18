@@ -58,8 +58,8 @@ public class Main {
     public static void main(String[] args) {
         boolean bots_on = true;
             boolean login_on = false;
-            boolean message_on = true;
-            boolean topic_on = false;
+            boolean message_on = false;
+            boolean topic_on = true;
         boolean my_terminal_on = false;
 
         boolean defaults = true;
@@ -88,7 +88,7 @@ public class Main {
             if(topic_on)
             {
                 int time_between_topics_messages = 3000;
-                int time_between_topics_messages_receive = 9000;
+                int time_between_topics_messages_receive = 4000;
 
                 Bot_Thread_Send bot1 = new Bot_Thread_Send("Jack","add to Moto for 0.0013h Hello",time_between_topics_messages);
                 Bot_Thread_Send bot2 = new Bot_Thread_Send("John","add to Moto for 0.0007h Yello",time_between_topics_messages);
@@ -98,14 +98,16 @@ public class Main {
                 bot2.start();
                 bot3.start();
 
-                Bot_Thread_Send bot_RT1 = new Bot_Thread_Send("Jack","read topics",time_between_topics_messages_receive);
+                Bot_Thread_Send bot_RT1 = new Bot_Thread_Send("Jack","read topics Moto",time_between_topics_messages_receive);
                 Bot_Thread_Send bot_RT2 = new Bot_Thread_Send("John","read topics",time_between_topics_messages_receive);
                 Bot_Thread_Send bot_RT3 = new Bot_Thread_Send("Jim","read topics",time_between_topics_messages_receive);
+                Bot_Thread_Send bot_RT4 = new Bot_Thread_Send("Jim","admin see all topics",time_between_topics_messages_receive);
                 //admin see all topics
 
                 bot_RT1.start();
-                bot_RT2.start();
-                bot_RT3.start();
+                //bot_RT2.start();
+                //bot_RT3.start();
+                bot_RT4.start();
             }
 
             if(message_on)
@@ -124,15 +126,16 @@ public class Main {
                 bot5.start();
                 bot6.start();
 
-                Bot_Thread_Send bot_RT4 = new Bot_Thread_Send("all","read messages for Sorin",time_between_messages_receive);
-                Bot_Thread_Send bot_RT5 = new Bot_Thread_Send("Jack","read messages for Sorin",time_between_messages_receive);
-                Bot_Thread_Send bot_RT6 = new Bot_Thread_Send("John","read messages for Sorin",time_between_messages_receive);
-                Bot_Thread_Send bot_RT7 = new Bot_Thread_Send("Jim","read messages for Sorin",time_between_messages_receive);
-
-                //bot_RT4.start();
-                bot_RT5.start();
-                bot_RT6.start();
-                bot_RT7.start();
+                Bot_Thread_Send bot_RM1 = new Bot_Thread_Send("all","read messages for Sorin",time_between_messages_receive);
+                Bot_Thread_Send bot_RM2 = new Bot_Thread_Send("Jack","read messages for Sorin",time_between_messages_receive);
+                Bot_Thread_Send bot_RM3 = new Bot_Thread_Send("John","read messages for Sorin",time_between_messages_receive);
+                Bot_Thread_Send bot_RM4 = new Bot_Thread_Send("Jim","read messages for Sorin",time_between_messages_receive);
+                Bot_Thread_Send bot_RM5 = new Bot_Thread_Send("all","admin see messages for Sorin",time_between_messages_receive);
+                //bot_RM1.start();
+                bot_RM2.start();
+                bot_RM3.start();
+                bot_RM4.start();
+                bot_RM5.start();
             }
 
             if(login_on)

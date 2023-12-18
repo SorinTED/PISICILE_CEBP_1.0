@@ -164,12 +164,19 @@ public class Do {
         else if(args.length == 5 && args[0].equals("admin") && args[1].equals("see") && args[2].equals("messages")
                 && Receiver_queue.all_receivers.contains(args[4]))
         {
-
+            System.out.println("************************************************************\n"+
+                            "Admin: Preview all messages in queue for " + args[4] +
+                            ":\n************************************************************");
+            Receiver_queue user_queue = Receiver_queue.find_queue_for(args[4]);
+            user_queue.read_messages_from_queue(user_queue,args[4],sender,true);
         }
         //read all messages in topic from author(sender)
-        else if(args.length == 2 && args[0].equals("read") && args[1].equals("topics") )
+        else if(args.length == 3 && args[0].equals("read") && args[1].equals("topics") && Topic.find_topic(args[2])!=null && Topic.find_topic(args[2]).topic_queue.size()>0)
         {
-
+            System.out.println("************************************************************\n"+
+                                "Displaying all topics:" + args[2] + 
+                                ":\n************************************************************");
+            Topic.display_topics(args[2]);
         }
         else
         {

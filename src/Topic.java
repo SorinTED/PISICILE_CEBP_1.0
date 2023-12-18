@@ -115,7 +115,39 @@ public class Topic {
         }
     }
 
-    public void read(){
+    public static void display_topics(String topicName) {
+        try {
+            sem_linked_lists_rd.acquire();
+
+            if (all_topics_name.contains(topicName)) {
+                Topic topic = find_topic(topicName);
+
+                if (topic != null) {
+                    System.out.println("Queue for topic " + topicName + ":");
+                    topic.sem_topic_queue_rd.acquire();
+
+                    for (Object element : topic.topic_queue) {
+                        LinkedList message = (LinkedList) element;
+                        System.out.println("Author: " + message.get(0));
+                        System.out.println("Content: " + message.get(1));
+                        System.out.println("Timestamp: " + message.get(2));
+                        System.out.println("Timeout: " + message.get(3));
+                        System.out.println("------------------------------------------------------------");
+                    }
+
+                    topic.sem_topic_queue_rd.release();
+                } else {
+                    System.out.println("Topic not found!");
+                }
+            } else {
+                System.out.println("Topic not found!");
+            }
+
+
+            sem_linked_lists_rd.release();
+        } catch (Exception exc) {
+            System.out.println(exc);
+        }
     }
     public static double get_post_lifetime(LinkedList post)
     {
