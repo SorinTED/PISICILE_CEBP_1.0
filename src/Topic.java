@@ -105,7 +105,7 @@ public class Topic {
             content.add(args[4].substring(0, args[4].length() - 1));
             this.topic_queue.add(content);
 
-            System.out.println(this.topic_name + ": " + this.topic_queue);
+            System.out.println(this.topic_name + ": " + this.topic_queue); // to be deleted
 
             this.sem_topic_queue_wr.release();
 
@@ -113,6 +113,9 @@ public class Topic {
         {
             System.out.println(exc);
         }
+    }
+
+    public void read(){
     }
     public static double get_post_lifetime(LinkedList post)
     {
@@ -190,6 +193,8 @@ public class Topic {
             System.out.println(exc);
         }
     }
+
+    //lok into
     public static String list_of_topics()
     {
         try {

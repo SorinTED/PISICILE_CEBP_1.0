@@ -57,8 +57,8 @@ public class Main {
 
     public static void main(String[] args) {
         boolean bots_on = true;
-            boolean login_on = true;
-            boolean message_on = false;
+            boolean login_on = false;
+            boolean message_on = true;
             boolean topic_on = false;
         boolean my_terminal_on = false;
 
@@ -75,12 +75,12 @@ public class Main {
             loginDatabase.addUser(user2);
             loginDatabase.addUser(user3);
 
-            Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
-            Receiver_queue Radu_messages = new Receiver_queue("Radu");
 
             Topic moto = new Topic("Moto");
             Topic university = new Topic("University");
             Topic job = new Topic("Job");
+
+
         }
 
         if(bots_on)
@@ -88,6 +88,7 @@ public class Main {
             if(topic_on)
             {
                 int time_between_topics_messages = 3000;
+                int time_between_topics_messages_receive = 9000;
 
                 Bot_Thread_Send bot1 = new Bot_Thread_Send("Jack","add to Moto for 0.0013h Hello",time_between_topics_messages);
                 Bot_Thread_Send bot2 = new Bot_Thread_Send("John","add to Moto for 0.0007h Yello",time_between_topics_messages);
@@ -96,11 +97,24 @@ public class Main {
                 bot1.start();
                 bot2.start();
                 bot3.start();
+
+                Bot_Thread_Send bot_RT1 = new Bot_Thread_Send("Jack","read topics",time_between_topics_messages_receive);
+                Bot_Thread_Send bot_RT2 = new Bot_Thread_Send("John","read topics",time_between_topics_messages_receive);
+                Bot_Thread_Send bot_RT3 = new Bot_Thread_Send("Jim","read topics",time_between_topics_messages_receive);
+                //admin see all topics
+
+                bot_RT1.start();
+                bot_RT2.start();
+                bot_RT3.start();
             }
 
             if(message_on)
             {
                 int time_between_messages = 1000;
+                int time_between_messages_receive = 3000;
+
+                Receiver_queue Sorin_messages = new Receiver_queue("Sorin");
+                Receiver_queue Radu_messages = new Receiver_queue("Radu");
 
                 Bot_Thread_Send bot4 = new Bot_Thread_Send("Jack","send Sorin Hello",time_between_messages);
                 Bot_Thread_Send bot5 = new Bot_Thread_Send("John","send Sorin Yello",time_between_messages);
@@ -109,6 +123,16 @@ public class Main {
                 bot4.start();
                 bot5.start();
                 bot6.start();
+
+                Bot_Thread_Send bot_RT4 = new Bot_Thread_Send("all","read messages for Sorin",time_between_messages_receive);
+                Bot_Thread_Send bot_RT5 = new Bot_Thread_Send("Jack","read messages for Sorin",time_between_messages_receive);
+                Bot_Thread_Send bot_RT6 = new Bot_Thread_Send("John","read messages for Sorin",time_between_messages_receive);
+                Bot_Thread_Send bot_RT7 = new Bot_Thread_Send("Jim","read messages for Sorin",time_between_messages_receive);
+
+                //bot_RT4.start();
+                bot_RT5.start();
+                bot_RT6.start();
+                bot_RT7.start();
             }
 
             if(login_on)
@@ -123,6 +147,7 @@ public class Main {
                 bot8.start();
                 bot9.start();
             }
+
         }
 
         //for me in terminal

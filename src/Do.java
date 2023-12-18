@@ -144,10 +144,38 @@ public class Do {
             queue.delete_user();
             queue=null;
         }
+        //read messages in queue for user from sender
+        else if(args.length == 4 && args[0].equals("read") && args[1].equals("messages") && args[2].equals("for")
+                && Receiver_queue.all_receivers.contains(args[3]))
+        {
+            System.out.println("Show messages for " + args[3] + " from " + sender); // add the sender
+            Receiver_queue user_queue = Receiver_queue.find_queue_for(args[3]);
+            user_queue.read_messages_from_queue(user_queue,args[3],sender,false);
+        }
+        //read all messages in queue for user
+        else if(args.length == 4 && args[0].equals("read") && args[1].equals("messages") && args[2].equals("for")
+                && Receiver_queue.all_receivers.contains(args[3]) && sender.equals("all"))
+        {
+            System.out.println("Show all messages for " + args[3] ); // add the sender
+            Receiver_queue user_queue = Receiver_queue.find_queue_for(args[3]);
+            user_queue.read_messages_from_queue(user_queue,args[3],sender,false);
+        }
+        //admin see all messages in queue for use
+        else if(args.length == 5 && args[0].equals("admin") && args[1].equals("see") && args[2].equals("messages")
+                && Receiver_queue.all_receivers.contains(args[4]))
+        {
+
+        }
+        //read all messages in topic from author(sender)
+        else if(args.length == 2 && args[0].equals("read") && args[1].equals("topics") )
+        {
+
+        }
         else
         {
             System.out.println("Command error, maybe a typo or invalid user/topic?");
         }
+
     }
 
 }
