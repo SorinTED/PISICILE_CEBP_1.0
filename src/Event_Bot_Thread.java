@@ -33,7 +33,7 @@ public class Event_Bot_Thread extends Thread{
     private void Do_events_database()
     {
         //System.out.println("Event here");
-        if(true)
+        if(false)
         {
             System.out.println("New user login!");
         }

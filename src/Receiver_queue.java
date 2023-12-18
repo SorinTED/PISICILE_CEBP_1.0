@@ -11,6 +11,9 @@ public class Receiver_queue {
     private static LinkedList all_queues = new LinkedList<>();
     public LinkedList message_queue = new LinkedList();
 
+    public static boolean concurrency_enabled_for_write = true;
+    public static boolean verbose = false;
+
     public Semaphore sem_message_queue_wr = new Semaphore(1);
     public static Semaphore sem_linked_lists_wr = new Semaphore(1);
 
@@ -87,15 +90,21 @@ public class Receiver_queue {
 
     public boolean space_left_in_queue()
     {
-        if(this.max_messages - this.message_queue.size()>0)
+        lock_max_messages.lock();
+        if(this.max_messages - this.message_queue.size()>0) {
+            lock_max_messages.unlock();
             return true;
-        else
+        }
+        else {
+            lock_max_messages.unlock();
             return false;
+        }
     }
     public void write(Receiver_queue user_queue, String sender ,String[] args)
     {
         try {
-            user_queue.sem_message_queue_wr.acquire();
+            if (concurrency_enabled_for_write)
+                user_queue.sem_message_queue_wr.acquire();
 
             LinkedList content = new LinkedList();
             content.add(sender);
@@ -109,12 +118,16 @@ public class Receiver_queue {
             content.add(timestamp);
             user_queue.message_queue.add(content);
 
-            System.out.println(user_queue.receiver_name + ": " + user_queue.message_queue);
+            //here we have also a NullPointerException in case of concurrent modifications
+            if(verbose && concurrency_enabled_for_write)
+                System.out.println(user_queue.receiver_name + ": " + user_queue.message_queue);
+            System.out.println("Message sent successfully");
 
-            user_queue.sem_message_queue_wr.release();
+            if (concurrency_enabled_for_write)
+                user_queue.sem_message_queue_wr.release();
         }catch (Exception exc)
         {
-            System.out.println(exc);
+            System.out.println(exc + " in write");
         }
     }
     //Event 1

@@ -66,7 +66,7 @@ public class Do {
             //System.out.println("Adding to topic ... ");
             Topic topic = Topic.find_topic(args[2]);
             if (topic.space_left_in_queue())
-                topic.write(sender, args);
+                topic.write(topic, sender, args);
             else
                 System.out.println("Queue for topic " + topic.topic_name + " is full");
         }

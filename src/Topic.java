@@ -29,6 +29,10 @@ public class Topic {
     public Lock lock_max_posts = new ReentrantLock();
     public static Lock lock_server_timeout = new ReentrantLock();
 
+    //demo variables
+    public static boolean concurrency_enabled_for_write = true;
+    public static boolean verbose = false;
+
     public static Event_Bot_Thread event_bot = new Event_Bot_Thread("Topic",1000);
 
     public void setMax_posts(int max_posts)
@@ -82,15 +86,23 @@ public class Topic {
     }
     public boolean space_left_in_queue()
     {
+        this.lock_max_posts.lock();
         if(this.max_posts - this.topic_queue.size()>0)
-                return true;
+        {
+            this.lock_max_posts.unlock();
+            return true;
+        }
         else
-                return false;
+        {
+            this.lock_max_posts.unlock();
+            return false;
+        }
     }
-    public void write(String author ,String[] args)
+    public void write(Topic topic, String author ,String[] args)
     {
         try {
-            this.sem_topic_queue_wr.acquire();
+            if(concurrency_enabled_for_write)
+                topic.sem_topic_queue_wr.acquire();
 
             LinkedList content = new LinkedList();
             content.add(author);
@@ -103,11 +115,14 @@ public class Topic {
             Date timestamp = new Date();
             content.add(timestamp);
             content.add(args[4].substring(0, args[4].length() - 1));
-            this.topic_queue.add(content);
+            topic.topic_queue.add(content);
 
-            System.out.println(this.topic_name + ": " + this.topic_queue);
+            if(verbose)
+                System.out.println(topic.topic_name + ": " + topic.topic_queue);
+            System.out.println("Post added to topic ");
 
-            this.sem_topic_queue_wr.release();
+            if(concurrency_enabled_for_write)
+                topic.sem_topic_queue_wr.release();
 
         }catch (Exception exc)
         {
@@ -130,7 +145,7 @@ public class Topic {
     public static void delete_posts_after()
     {
         try {
-            sem_linked_lists_rd.acquire();
+            sem_linked_lists_wr.acquire();
             for(Object element : Topic.all_topics)
             {
                 Topic topic = (Topic)(element);
@@ -141,18 +156,21 @@ public class Topic {
                 while(i.hasNext())
                 {
                     LinkedList post = (LinkedList) i.next();
-                    double post_lifetime = get_post_lifetime(post);
-                    double post_timeout = get_post_timeout(post);
-                    if(post_lifetime>=server_timeout && server_timeout > 0 || post_lifetime>=post_timeout)
+                    if(post != null)
                     {
-                        System.out.println("Removed: " + post);
-                        i.remove();
+                        double post_lifetime = get_post_lifetime(post);
+                        double post_timeout = get_post_timeout(post);
+                        if(post_lifetime>=server_timeout && server_timeout > 0 || post_lifetime>=post_timeout)
+                        {
+                            System.out.println("Removed: " + post);
+                            i.remove();
+                        }
                     }
                 }
 
                 topic.sem_topic_queue_wr.release();
             }
-            sem_linked_lists_rd.release();
+            sem_linked_lists_wr.release();
         }catch (Exception exc){
             System.out.println(exc);
         }
