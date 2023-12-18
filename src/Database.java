@@ -9,8 +9,8 @@ public class Database{
     public static Semaphore sem_authUsers_wr = new Semaphore(1);
     public static Semaphore sem_authUsers_rd = new Semaphore(5);
 
+    public static boolean concurrency_enabled_for_write = true;
     public static Event_Bot_Thread event_bot = new Event_Bot_Thread("Database",2000);
-
 
     static {
         initializeDatabase();
@@ -27,7 +27,7 @@ public class Database{
             authUsers.add(admin);
             sem_authUsers_wr.release();
         } catch (Exception e){
-
+            System.out.println(e);
         }
     }
 
@@ -48,19 +48,26 @@ public class Database{
 
     public static boolean login(User user)
     {
-        if(findUser(user) != null)
-        {
-            try{
-                sem_authUsers_wr.acquire();
-                if(!isAuthenticated(user))
-                {
-                    authUsers.add(user);
+        boolean notifications = false;
+        User userToLogin = findUser(user, notifications);
+        if(userToLogin != null) {
+            if (!userToLogin.isLoggedIn()) {
+                try {
+                    sem_authUsers_wr.acquire();
+                    if (!isAuthenticated(userToLogin)) {
+                        userToLogin.setLoggedIn(true);
+                        authUsers.add(userToLogin);
+                    }
+                    sem_authUsers_wr.release();
+                } catch (Exception e) {
+                    System.out.println(e);
                 }
-                sem_authUsers_wr.release();
-            }catch (Exception e) {
-                System.out.println(e);
+                return true;
             }
-            return true;
+            else {
+                System.out.println("User " + user + " is already logged in!");
+                return false;
+            }
         }
         return false;
     }
@@ -71,6 +78,7 @@ public class Database{
             sem_authUsers_wr.acquire();
             if(isAuthenticated(user))
             {
+                user.setLoggedIn(false);
                 authUsers.remove(user);
             }
             sem_authUsers_wr.release();
@@ -84,27 +92,37 @@ public class Database{
         return user.getRole().equals("ADMIN");
     }
 
-    public static User findUser(User user)
+    public static User findUser(User user, boolean notifications)
     {
-        try{
-            sem_database_rd.acquire();
-            if(database.contains(user))
-            {
+        if(concurrency_enabled_for_write) {
+            try {
+                sem_database_rd.acquire();
+                if (database.contains(user)) {
+                    int index = database.indexOf(user);
+                    sem_database_rd.release();
+                    return database.get(index);
+                } else {
+                    if (notifications) {
+                        System.out.println("User " + user + " not found in DB");
+                    }
+                    sem_database_rd.release();
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            return null;
+        }
+        else
+        {
+            if(database.contains(user)) {
                 int index = database.indexOf(user);
-                sem_database_rd.release();
                 return database.get(index);
             }
-            else{
-                System.out.println("User " + user + " not found in DB");
-                sem_database_rd.release();
-            }
-        }catch (Exception e) {
-            System.out.println(e);
+            return null;
         }
-        return null;
     }
 
-    public static User findUserByUsername(String username)
+    public static User findUserByUsername(String username, boolean notifications)
     {
         try{
             sem_database_rd.acquire();
@@ -115,7 +133,9 @@ public class Database{
                     return database.get(index);
                 }
             }
-            System.out.println("Username '" + username + "' not found in DB");
+            if(notifications) {
+                System.out.println("Username '" + username + "' not found in DB");
+            }
             sem_database_rd.release();
         }catch (Exception e) {
             System.out.println(e);
@@ -123,39 +143,51 @@ public class Database{
         return null;
     }
 
-    public static User findUserBySender(String sender)
+    public static User findUserBySender(String sender, boolean verbose)
     {
+        boolean notifications = false;
         String username = sender.substring(1, sender.length() - 1);
-        return findUserByUsername(username);
+        return findUserByUsername(username, notifications);
     }
 
-    public static void addUser(User user)
+    public static boolean addUser(User user)
     {
-        try {
-            if(findUser(user) != null) {
-                System.out.println("User already signed up!");
-                return;
-            }
-            else if(findUserByUsername(user.getUsername()) != null) {
-                System.out.println("Username already taken!");
-                return;
-            }
+        boolean notifications = false;
+        if(concurrency_enabled_for_write) {
+            try {
+                if (findUser(user, notifications) != null) {
+                    System.out.println("User " + user + " already signed up!");
+                    return false;
+                }
 
-            sem_database_wr.acquire();
-            database.add(user);
-            System.out.println("User " + user + " added!");
-            sem_database_wr.release();
-        } catch (Exception e) {
-            System.out.println(e);
+                sem_database_wr.acquire();
+                database.add(user);
+                System.out.println("User " + user + " created!");
+                sem_database_wr.release();
+
+            } catch (Exception e) {
+                System.out.println(e);
+            }
         }
+        else
+        {
+            if (findUser(user, notifications) != null) {
+                System.out.println("User " + user + " already signed up!");
+                return false;
+            }
+            database.add(user);
+            System.out.println("User " + user + " created!");
+        }
+        return true;
     }
 
-    public static void deleteUser(String username)
+    public static boolean deleteUser(String username)
     {
-        User user = findUserByUsername(username);
+        boolean notifications = true;
+        User user = findUserByUsername(username, notifications);
         if(user == null) {
-            System.out.println("User not found in DB");
-            return;
+            System.out.println("User not found in DB!");
+            return false;
         }
         try{
             sem_database_wr.acquire();
@@ -168,6 +200,7 @@ public class Database{
         } catch (Exception e){
             System.out.println(e);
         }
+        return true;
     }
 
     public static void seeUsers()

@@ -4,17 +4,20 @@ public class User {
     private String username;
     private String password;
     private String role;
+    private boolean isLoggedIn;
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
         this.role = "USER";
+        this.isLoggedIn = false;
     }
 
     public User(String username, String password, String role) {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.isLoggedIn = false;
     }
 
     @Override
@@ -40,5 +43,13 @@ public class User {
 
     public String getUsername() {
         return this.username;
+    }
+
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        isLoggedIn = loggedIn;
     }
 }
