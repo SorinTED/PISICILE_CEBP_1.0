@@ -117,15 +117,52 @@ public class Topic {
             content.add(args[4].substring(0, args[4].length() - 1));
             topic.topic_queue.add(content);
 
+
             if(verbose)
                 System.out.println(topic.topic_name + ": " + topic.topic_queue);
             System.out.println("Post added to topic ");
+
 
             if(concurrency_enabled_for_write)
                 topic.sem_topic_queue_wr.release();
 
         }catch (Exception exc)
         {
+            System.out.println(exc);
+        }
+    }
+
+    public static void display_topics(String topicName) {
+        try {
+            sem_linked_lists_rd.acquire();
+
+            if (all_topics_name.contains(topicName)) {
+                Topic topic = find_topic(topicName);
+
+                if (topic != null) {
+                    System.out.println("Queue for topic " + topicName + ":");
+                    topic.sem_topic_queue_rd.acquire();
+
+                    for (Object element : topic.topic_queue) {
+                        LinkedList message = (LinkedList) element;
+                        System.out.println("Author: " + message.get(0));
+                        System.out.println("Content: " + message.get(1));
+                        System.out.println("Timestamp: " + message.get(2));
+                        System.out.println("Timeout: " + message.get(3));
+                        System.out.println("------------------------------------------------------------");
+                    }
+
+                    topic.sem_topic_queue_rd.release();
+                } else {
+                    System.out.println("Topic not found!");
+                }
+            } else {
+                System.out.println("Topic not found!");
+            }
+
+
+            sem_linked_lists_rd.release();
+        } catch (Exception exc) {
             System.out.println(exc);
         }
     }
@@ -208,6 +245,8 @@ public class Topic {
             System.out.println(exc);
         }
     }
+
+    //lok into
     public static String list_of_topics()
     {
         try {

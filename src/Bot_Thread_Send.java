@@ -8,7 +8,6 @@ public class Bot_Thread_Send extends Thread {
         while (true) {
             try {
                 Send_Bot Bot = new Send_Bot(name,commands);
-//                System.out.println(this.getName() + ": " + name + " is running - " + i++);
                 Thread.sleep(wait_ms);
             } catch (InterruptedException e) {
                 e.printStackTrace();

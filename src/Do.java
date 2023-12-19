@@ -22,6 +22,7 @@ public class Do {
         //login
         if(args.length == 3 && args[0].equals("login")) {
             System.out.println("Logging in ... ");
+
             String username = args[1];
             String password = args[2];
             User userToLogin = new User(username, password);
@@ -238,10 +239,45 @@ public class Do {
                 System.out.println("You don't have this permission!");
             }
         }
+        //read messages in queue for user from sender
+        else if(args.length == 4 && args[0].equals("read") && args[1].equals("messages") && args[2].equals("for")
+                && Receiver_queue.all_receivers.contains(args[3]))
+        {
+            System.out.println("Show messages for " + args[3] + " from " + sender); // add the sender
+            Receiver_queue user_queue = Receiver_queue.find_queue_for(args[3]);
+            user_queue.read_messages_from_queue(user_queue,args[3],sender,false);
+        }
+        //read all messages in queue for user
+        else if(args.length == 4 && args[0].equals("read") && args[1].equals("messages") && args[2].equals("for")
+                && Receiver_queue.all_receivers.contains(args[3]) && sender.equals("all"))
+        {
+            System.out.println("Show all messages for " + args[3] ); // add the sender
+            Receiver_queue user_queue = Receiver_queue.find_queue_for(args[3]);
+            user_queue.read_messages_from_queue(user_queue,args[3],sender,false);
+        }
+        //admin see all messages in queue for use
+        else if(args.length == 5 && args[0].equals("admin") && args[1].equals("see") && args[2].equals("messages")
+                && Receiver_queue.all_receivers.contains(args[4]))
+        {
+            System.out.println("************************************************************\n"+
+                            "Admin: Preview all messages in queue for " + args[4] +
+                            ":\n************************************************************");
+            Receiver_queue user_queue = Receiver_queue.find_queue_for(args[4]);
+            user_queue.read_messages_from_queue(user_queue,args[4],sender,true);
+        }
+        //read all messages in topic from author(sender)
+        else if(args.length == 3 && args[0].equals("read") && args[1].equals("topics") && Topic.find_topic(args[2])!=null && Topic.find_topic(args[2]).topic_queue.size()>0)
+        {
+            System.out.println("************************************************************\n"+
+                                "Displaying all topics:" + args[2] +
+                                ":\n************************************************************");
+            Topic.display_topics(args[2]);
+        }
         else
         {
             System.out.println("Command error, maybe a typo or invalid user/topic?");
         }
+
     }
 
 }
