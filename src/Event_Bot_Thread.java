@@ -8,6 +8,8 @@ public class Event_Bot_Thread extends Thread{
             try {
                 if (type.equals("Topic"))
                     Do_events_topic();
+                else if(type.equals("Database"))
+                    Do_events_database();
                 else
                     Do_events_messages();
                 Thread.sleep(wait_ms);
@@ -26,6 +28,15 @@ public class Event_Bot_Thread extends Thread{
         //System.out.println("Event here");
         Topic.delete_posts_after();
         Topic.verify_number_of_posts();
+    }
+
+    private void Do_events_database()
+    {
+        //System.out.println("Event here");
+        if(false)
+        {
+            System.out.println("New user login!");
+        }
     }
 
     public Event_Bot_Thread(String type, int wait_ms)

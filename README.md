@@ -2,27 +2,47 @@
 
 Hello, our application will represent an messaging app similar to reddit or discord, representing an platform for users to message one to one or one to many
 
-Problems:
+### Features Implemented:
 
-1. Synchronization
-    Issue: When multiple applications concurrently access shared resources, race conditions may occur, leading to data inconsistency.
-    Solution: Implement synchronization mechanisms like locks, semaphores, or mutexes to control access to shared resources and ensure data consistency.
+#### Messages
+- Simple messages that a user can send to another user using this app.
+- Once the messages are read, they will disappear.
 
-2. Message Queue Overflow
-    Issue: Message queues have limited capacity, and simultaneous message transmissions can lead to queue overflow and potential data loss.
-    Solution: Develop a mechanism to gracefully handle queue overflows, which may involve waiting for space, discarding or requeuing messages, and robust error handling.
+#### Topics
+- Contain a certain number of posts.
+- Each post has a timeout, and once the post timeout is reached, they will disappear.
+- The server also has a timeout for all posts, also in this case if the timeout is reached, they will disappear.
 
-3. Message Cleanup and Expiration
-    Issue: Removing expired messages from queues and topics without conflicts during concurrent message processing can be challenging.
-    Solution: Use scheduled tasks or separate threads to periodically clean up expired messages. Ensure proper resource locking to prevent conflicts.
+#### Admin
+- This adds an original superuser with capabilities to administrate the system from the terminal using comprehensive special commands.
+- He can also behave as a normal user with abilities to write and read messages/posts.
+- He exists as soon as the app is launched
 
-4. Message Filtering and Subscription Management
-    Issue: Managing client subscriptions to topics and message types dynamically and concurrently is complex.
-    Solution: Maintain a data structure to track client subscriptions, and use appropriate locking mechanisms to efficiently route published messages to interested clients.
+### Problems:
 
-5. Resource Allocation
-    Issue: Concurrent requests for message queues and topics can result in resource contention, where multiple clients compete for the same resources.
-    Solution: Implement a resource allocation manager to oversee resource availability and control client requests, ensuring fair and efficient resource allocation.
+1. **Thread-safety**
+    - **Issue:** This was the biggest cause of problems we had :)
+    - **Solution:** We learnt and used from the java utils library technology such as Semaphores for read and write operations (both static and for single instance),Reentrant Locks for a specific resource (also both static and for single instance) and thread safe operations
+
+   
+    Fun Fact: Did you know that an "append" operation in LinkedList using a "for" loop will throw an exception even if an error does not occur? Why? This is considered a write operation in a non thread-safe way, and it uses fail-fast polices. Solution? Use iterators!
+
+2. **Event-based Functions**
+    - **Issue:** Develop a way to wait for an event, act when it happens, and do this a loop
+    - **Solution:** 3 special thread bots (one in the DB, one for messages and one for topics), pooling for multiple events, waiting for specific events to happen and act
+
+3. **Empty Queues and Topics**
+    - **Issue:** Have a safe way to act (or not) in case of an empty data structure
+    - **Solution:** Use at the lowest level function to verify, print or discard in case of an empty data structure
+
+4. **Feature related issues**
+    - **Issue:** Develop the necessary features required and the one we proposed ourselves we wanted to add
+    - **Solution:** Work hard and be creative, tried to use simple operations and keep a clear design as we could
+   
+5. **RabbitMQ and other technologies**
+    - **Issue:** Setting up RabbitMQ was quite challenging
+    - **Solution:** Document ourselves using the official documentation and keep trying
+
 
    ARCHITECTURE:
      Centralized;
