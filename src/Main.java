@@ -69,10 +69,10 @@ public class Main {
         boolean database = true;
 
         //send demos variables
-        boolean send_demo = false;
-            String thing_to_demo = "Topics";
-            int demo_type = 5;
-        boolean send_demo_database = true;
+        boolean send_demo = true;
+            String thing_to_demo = "Messages";
+            int demo_type = 3;
+        boolean send_demo_database = false;
 
 
         send_demo(send_demo,thing_to_demo,demo_type);
@@ -90,6 +90,7 @@ public class Main {
 
         Receiver_queue.verbose = true;
         Topic.verbose = true;
+        Do.login_required = false;
 
         default_values(true);
 
@@ -252,7 +253,7 @@ public class Main {
                     Moto_topic.setMax_posts(100);
                     Topic.concurrency_enabled_for_write = false;
 
-                    Bot_Thread_Send bot1 = new Bot_Thread_Send("Jack", "add to Moto for " + time_string_1h + " Nice motorcycle", time_1sec);
+                    Bot_Thread_Send bot1 = new Bot_Thread_Send("Sorin", "add to Moto for " + time_string_1h + " Nice motorcycle", time_1sec);
                     Bot_Thread_Send bot2 = new Bot_Thread_Send("Jim", "add to Moto for " + time_string_1h + " Love that model", time_1sec);
                     Bot_Thread_Send bot3 = new Bot_Thread_Send("John", "add to Moto for " + time_string_1h + " I love motorcycles", time_1sec);
 

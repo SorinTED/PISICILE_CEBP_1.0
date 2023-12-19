@@ -1,8 +1,7 @@
-import javax.xml.crypto.Data;
-
 public class Do {
     private String[] args;
     private static boolean notifications = false;
+    public static boolean login_required = true;
     public Do(String[] args)
     {
         this.args=args;
@@ -39,7 +38,7 @@ public class Do {
     public static void execute(String sender, String[] args)
     {
         User userSender = Database.findUserBySender(sender, notifications);
-        if(userSender == null)
+        if(userSender == null && login_required)
         {
             System.out.println("You need to login for this commands!");
             return;
