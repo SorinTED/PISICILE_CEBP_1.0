@@ -30,6 +30,8 @@ public class Do {
                     System.out.println("User " + loggedInUser + " Logged in successfully !");
                 else
                     System.out.println("Bad credentials for: " + userToLogin);
+
+                Receiver_queue.notifyUserUponLogin(args[1]);
                 loginDatabase.sem_login_database.release();
             } catch (Exception exc) {
                 System.out.println(exc);
@@ -174,7 +176,7 @@ public class Do {
         else if(args.length == 3 && args[0].equals("read") && args[1].equals("topics") && Topic.find_topic(args[2])!=null && Topic.find_topic(args[2]).topic_queue.size()>0)
         {
             System.out.println("************************************************************\n"+
-                                "Displaying all topics:" + args[2] + 
+                                "Displaying all topics:" + args[2] +
                                 ":\n************************************************************");
             Topic.display_topics(args[2]);
         }

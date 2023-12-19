@@ -1,5 +1,4 @@
-import java.util.Date;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -123,7 +122,7 @@ public class Receiver_queue {
 
         if(user_queue != null)
         {
-            if(user_queue.space_left_in_queue())
+            if(user_queue.message_queue.size()>0)
             {
                 try {
                     user_queue.sem_message_queue_wr.acquire();
@@ -185,6 +184,62 @@ public class Receiver_queue {
 
         System.out.println("Message: " + message);
         System.out.println("Timestamp: " + timestamp);
+    }
+
+    public static void notifyUserUponLogin(String loggedInUser) {
+        try {
+            sem_linked_lists_rd.acquire();
+            Receiver_queue loggedInQueue = find_queue_for(loggedInUser);
+
+            if (loggedInQueue != null) {
+                loggedInQueue.sem_message_queue_rd.acquire();
+                // loggedInQueue.header("all");
+                System.out.println("======================================================================");
+                if (loggedInQueue.message_queue.size() > 0) {
+                    System.out.println("Welcome! You have " + loggedInQueue.message_queue.size() + " new messages!");
+
+                    // Keep track of processed senders
+                    List<String> processedSenders = new ArrayList<>();
+
+                    for (Object element : loggedInQueue.message_queue) {
+                        LinkedList content = (LinkedList) element;
+                        String sender = (String) content.get(0);
+
+                        // Check if sender is already processed
+                        if (!((ArrayList<?>) processedSenders).contains(sender)) {
+                            int messagesFromSender = countMessagesFromSender(loggedInQueue.message_queue, sender);
+
+                            System.out.println("Sender: " + sender + " | Messages: " + messagesFromSender);
+
+                            // Add sender to the list of processed senders
+                            processedSenders.add(sender);
+                        }
+                    }
+                } else
+                    System.out.println("Welcome! You are up to date");
+                System.out.println("======================================================================");
+                loggedInQueue.sem_message_queue_rd.release();
+                System.out.println("------------------------------------------------------------");
+            } else {
+                System.out.println("User not found!");
+            }
+
+            sem_linked_lists_rd.release();
+        } catch (Exception exc) {
+            System.out.println(exc);
+        }
+    }
+
+
+    private static int countMessagesFromSender(LinkedList messageQueue, String sender) {
+        int count = 0;
+        for (Object element : messageQueue) {
+            LinkedList content = (LinkedList) element;
+            if (sender.equals(content.get(0))) {
+                count++;
+            }
+        }
+        return count;
     }
     //Event 1
     public static void verify_number_of_messages()

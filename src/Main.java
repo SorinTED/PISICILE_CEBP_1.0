@@ -57,9 +57,9 @@ public class Main {
 
     public static void main(String[] args) {
         boolean bots_on = true;
-            boolean login_on = false;
-            boolean message_on = false;
-            boolean topic_on = true;
+            boolean login_on = true;
+            boolean message_on = true;
+            boolean topic_on = false;
         boolean my_terminal_on = false;
 
         boolean defaults = true;
@@ -133,8 +133,8 @@ public class Main {
                 Bot_Thread_Send bot_RM5 = new Bot_Thread_Send("all","admin see messages for Sorin",time_between_messages_receive);
                 //bot_RM1.start();
                 bot_RM2.start();
-                bot_RM3.start();
-                bot_RM4.start();
+                //bot_RM3.start();
+                //bot_RM4.start();
                 bot_RM5.start();
             }
 
@@ -146,7 +146,7 @@ public class Main {
                 Bot_Thread_Send bot8 = new Bot_Thread_Send("login Sorin Sorin112",time_between_messages);
                 Bot_Thread_Send bot9 = new Bot_Thread_Send("login Pasquale Pasquale12",time_between_messages);
 
-                bot7.start();
+                //bot7.start();
                 bot8.start();
                 bot9.start();
             }
